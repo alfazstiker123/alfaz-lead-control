@@ -1,0 +1,813 @@
+<!doctype html>
+<html lang="id">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Lead Control Center — ALFA Z STIKER</title>
+<meta name="robots" content="noindex, nofollow">
+<style>
+  :root{
+    --bg:#f5f5f2; --card:#fff; --ink:#1c1c1a; --muted:#6b6b66; --line:#e3e2dc;
+    --accent:#e8590c; --accent-soft:#fdeee5; --good:#2b8a3e; --good-soft:#e6f4ea;
+    --warn:#b7791f; --warn-soft:#fdf3dc; --bad:#c92a2a; --bad-soft:#fde8e8;
+    --blue:#1c64c8; --blue-soft:#e6effb; --radius:10px;
+  }
+  *{box-sizing:border-box}
+  body{margin:0;font:14px/1.45 system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;background:var(--bg);color:var(--ink)}
+  button,input,select,textarea{font:inherit;color:inherit}
+  a{color:var(--blue)}
+  .hidden{display:none!important}
+  header{position:sticky;top:0;z-index:5;background:var(--ink);color:#fff;display:flex;align-items:center;gap:16px;padding:10px 16px;flex-wrap:wrap}
+  header .brand{font-weight:700;letter-spacing:.3px}
+  header .brand span{color:var(--accent)}
+  nav{display:flex;gap:4px;flex-wrap:wrap}
+  nav button{background:transparent;border:0;color:#cfcfca;padding:6px 10px;border-radius:6px;cursor:pointer}
+  nav button.active{background:#ffffff1f;color:#fff}
+  nav .count{display:inline-block;min-width:18px;padding:0 5px;margin-left:4px;border-radius:9px;background:var(--accent);color:#fff;font-size:11px;text-align:center}
+  header .me{margin-left:auto;font-size:13px;color:#cfcfca;display:flex;gap:10px;align-items:center}
+  header .me .btn{color:var(--ink)}
+  main{max-width:1180px;margin:0 auto;padding:16px}
+  h2{font-size:17px;margin:4px 0 12px}
+  h3{font-size:15px;margin:0 0 8px}
+  .grid{display:grid;gap:16px}
+  .g3{grid-template-columns:repeat(auto-fit,minmax(320px,1fr))}
+  .card{background:var(--card);border:1px solid var(--line);border-radius:var(--radius);padding:14px}
+  .card .sub{color:var(--muted);font-size:12px;margin:-4px 0 10px}
+  .row{display:flex;gap:8px;align-items:center;flex-wrap:wrap}
+  .item{border-top:1px solid var(--line);padding:10px 0;display:flex;gap:10px;align-items:flex-start;justify-content:space-between}
+  .item:first-of-type{border-top:0}
+  .item .who{font-weight:600}
+  .item .meta{color:var(--muted);font-size:12px}
+  .empty{color:var(--muted);font-size:13px;padding:8px 0}
+  .badge{display:inline-block;padding:1px 8px;border-radius:999px;font-size:11.5px;font-weight:600;white-space:nowrap;background:#eee;color:#444}
+  .b-NEW{background:var(--blue-soft);color:var(--blue)}
+  .b-ENGAGED,.b-QUALIFIED{background:#efe9fb;color:#6741d9}
+  .b-QUOTED{background:var(--warn-soft);color:var(--warn)}
+  .b-OBJECTION{background:var(--bad-soft);color:var(--bad)}
+  .b-READY_TO_BOOK{background:var(--accent-soft);color:var(--accent)}
+  .b-BOOKED,.b-INSTALLED,.b-CONFIRMED,.b-COMPLETED{background:var(--good-soft);color:var(--good)}
+  .b-LOST,.b-DO_NOT_CONTACT,.b-CANCELLED,.b-NO_SHOW{background:#ececea;color:#666}
+  .b-P1{background:var(--bad);color:#fff}.b-P2{background:var(--warn);color:#fff}.b-P3{background:#888;color:#fff}
+  .b-ADMIN{background:var(--ink);color:#fff}.b-AI{background:var(--blue-soft);color:var(--blue)}
+  .late{color:var(--bad);font-weight:600}
+  .btn{border:1px solid var(--line);background:#fff;border-radius:7px;padding:6px 11px;cursor:pointer;white-space:nowrap}
+  .btn:hover{border-color:#bbb}
+  .btn.primary{background:var(--accent);border-color:var(--accent);color:#fff}
+  .btn.dark{background:var(--ink);border-color:var(--ink);color:#fff}
+  .btn.good{background:var(--good);border-color:var(--good);color:#fff}
+  .btn.small{padding:3px 8px;font-size:12.5px}
+  .btn.wa{background:#25d366;border-color:#25d366;color:#fff;text-decoration:none}
+  .btn:disabled{opacity:.5;cursor:default}
+  label{display:block;font-size:12px;color:var(--muted);margin-bottom:3px}
+  input,select,textarea{width:100%;border:1px solid var(--line);border-radius:7px;padding:7px 9px;background:#fff}
+  textarea{min-height:64px;resize:vertical}
+  .form{display:grid;gap:10px;grid-template-columns:repeat(auto-fit,minmax(170px,1fr))}
+  .form .full{grid-column:1/-1}
+  table{width:100%;border-collapse:collapse;font-size:13px}
+  th,td{text-align:left;padding:7px 8px;border-bottom:1px solid var(--line);vertical-align:top}
+  th{font-size:12px;color:var(--muted);font-weight:600;background:#fafaf7;position:sticky;top:0}
+  td.num,th.num{text-align:right;font-variant-numeric:tabular-nums}
+  tr.click{cursor:pointer}tr.click:hover td{background:#fafaf7}
+  .tablewrap{overflow:auto;max-height:70vh;border:1px solid var(--line);border-radius:var(--radius);background:#fff}
+  .toolbar{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:12px;align-items:flex-end}
+  .toolbar > *{width:auto}
+  .toolbar input[type=search]{min-width:220px}
+  .kpis{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:12px;margin-bottom:16px}
+  .kpi{background:#fff;border:1px solid var(--line);border-radius:var(--radius);padding:12px}
+  .kpi .v{font-size:22px;font-weight:700;font-variant-numeric:tabular-nums}
+  .kpi .l{font-size:12px;color:var(--muted)}
+  /* login */
+  .login{max-width:360px;margin:12vh auto;background:#fff;border:1px solid var(--line);border-radius:14px;padding:24px}
+  .login h1{font-size:18px;margin:0 0 4px}
+  .login p{color:var(--muted);margin:0 0 16px;font-size:13px}
+  .login .form{grid-template-columns:1fr}
+  .err{color:var(--bad);font-size:13px;margin-top:8px}
+  /* drawer */
+  .overlay{position:fixed;inset:0;background:#0006;z-index:20;display:flex;justify-content:flex-end}
+  .drawer{width:min(760px,100%);height:100%;overflow:auto;background:var(--bg);padding:16px;box-shadow:-8px 0 24px #0002}
+  .drawer .top{display:flex;justify-content:space-between;align-items:flex-start;gap:10px;margin-bottom:12px}
+  .drawer h2{margin:0}
+  .drawer section{margin-bottom:14px}
+  .msgs{display:flex;flex-direction:column;gap:6px;max-height:340px;overflow:auto;padding:4px}
+  .msg{max-width:80%;padding:7px 10px;border-radius:10px;font-size:13px;white-space:pre-wrap;word-wrap:break-word}
+  .msg.in{align-self:flex-start;background:#fff;border:1px solid var(--line)}
+  .msg.out{align-self:flex-end;background:#dcf8c6}
+  .msg .t{display:block;font-size:11px;color:var(--muted);margin-top:3px}
+  .msg .q{display:block;font-size:11.5px;font-weight:600;color:var(--warn);margin-top:3px}
+  .seg{display:inline-flex;border:1px solid var(--line);border-radius:8px;overflow:hidden}
+  .seg button{border:0;background:#fff;padding:6px 10px;cursor:pointer;font-size:13px}
+  .seg button.on{background:var(--ink);color:#fff}
+  /* heatmap */
+  .heat{display:grid;grid-template-columns:54px repeat(24,1fr);gap:2px;font-size:10.5px;overflow-x:auto;min-width:640px}
+  .heat div{text-align:center;padding:3px 0;border-radius:3px}
+  .heat .h{color:var(--muted)}
+  .heat .open{outline:1px dashed #0002}
+  .toast{position:fixed;bottom:16px;left:50%;transform:translateX(-50%);background:var(--ink);color:#fff;padding:9px 14px;border-radius:8px;z-index:30;font-size:13px;max-width:90vw}
+  .toast.bad{background:var(--bad)}
+  @media (max-width:640px){
+    main{padding:10px}
+    header .me span{display:none}
+    .msg{max-width:92%}
+  }
+</style>
+</head>
+<body>
+
+<!-- ============ LOGIN ============ -->
+<div id="loginView" class="login hidden">
+  <h1>ALFA Z <span style="color:var(--accent)">STIKER</span></h1>
+  <p>Lead Control Center — masuk dengan akun staf.</p>
+  <form id="loginForm" class="form">
+    <div><label for="email">Email</label><input id="email" type="email" autocomplete="username" required></div>
+    <div><label for="password">Password</label><input id="password" type="password" autocomplete="current-password" required></div>
+    <button class="btn primary" type="submit">Masuk</button>
+  </form>
+  <div id="loginErr" class="err"></div>
+</div>
+
+<!-- ============ APP ============ -->
+<div id="appView" class="hidden">
+  <header>
+    <div class="brand">ALFA Z <span>STIKER</span> · Lead Control</div>
+    <nav id="nav">
+      <button data-tab="queue" class="active">Antrean<span class="count hidden" id="queueCount"></span></button>
+      <button data-tab="leads">Lead</button>
+      <button data-tab="bookings">Booking</button>
+      <button data-tab="products">Harga</button>
+      <button data-tab="reports">Laporan</button>
+    </nav>
+    <div class="me"><span id="meName"></span><button class="btn small" id="logoutBtn">Keluar</button></div>
+  </header>
+  <main>
+    <section id="tab-queue"></section>
+    <section id="tab-leads" class="hidden"></section>
+    <section id="tab-bookings" class="hidden"></section>
+    <section id="tab-products" class="hidden"></section>
+    <section id="tab-reports" class="hidden"></section>
+  </main>
+</div>
+
+<div id="drawerRoot"></div>
+<div id="toast" class="toast hidden"></div>
+
+<script type="module">
+import { createClient } from 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/+esm';
+
+// ---------------------------------------------------------------
+// KONFIGURASI — kunci publishable aman di sini (data dijaga RLS).
+// ---------------------------------------------------------------
+const SUPABASE_URL = 'https://xtonxtzlrosrmnngjuye.supabase.co';
+const SUPABASE_KEY = 'sb_publishable_f8CyFdC_NHzqYpAaZJ5kWQ_J5ENEori';
+const P1_TARGET_MIN = 5;        // target respons P1 (menit)
+const OPEN_HOUR = 8, CLOSE_HOUR = 17;   // jam buka toko (WIB)
+
+const sb = createClient(SUPABASE_URL, SUPABASE_KEY);
+
+// ---------------------------------------------------------------
+// LABEL
+// ---------------------------------------------------------------
+const STATUS = {
+  NEW:'Baru', ENGAGED:'Membalas', QUALIFIED:'Kebutuhan jelas', QUOTED:'Sudah dikirim harga',
+  OBJECTION:'Keberatan', READY_TO_BOOK:'Siap booking', BOOKED:'Booking', INSTALLED:'Terpasang',
+  LOST:'Tidak lanjut', DO_NOT_CONTACT:'Jangan dihubungi'
+};
+const ACTIVE_STATUSES = ['NEW','ENGAGED','QUALIFIED','QUOTED','OBJECTION','READY_TO_BOOK'];
+const LOST_REASON = {
+  NO_RESPONSE:'Tidak ada respons', PRICE:'Harga', LOCATION:'Lokasi', SCHEDULE:'Jadwal',
+  QUALITY_CONCERN:'Ragu kualitas', CHOSE_COMPETITOR:'Pilih kompetitor', NOT_NEEDED:'Tidak butuh', OTHER:'Lainnya'
+};
+const HANDOFF_REASON = {
+  READY_TO_BOOK:'Siap booking', COMPLAINT:'Komplain', PRICE_NOT_FOUND:'Harga tidak ada di database',
+  SPECIAL_DISCOUNT:'Minta diskon khusus', CUSTOMER_REQUEST:'Minta bicara dengan admin',
+  LOW_CONFIDENCE:'AI tidak yakin', OTHER:'Lainnya'
+};
+const DEFAULT_PRIORITY = { READY_TO_BOOK:'P1', COMPLAINT:'P1', PRICE_NOT_FOUND:'P1', SPECIAL_DISCOUNT:'P2', CUSTOMER_REQUEST:'P2', LOW_CONFIDENCE:'P3', OTHER:'P3' };
+const BOOKING_STATUS = { PENDING_CONFIRMATION:'Menunggu konfirmasi', CONFIRMED:'Terkonfirmasi', RESCHEDULED:'Dijadwal ulang', CANCELLED:'Batal', COMPLETED:'Selesai', NO_SHOW:'Tidak datang' };
+const TEMP = { COLD:'Dingin', WARM:'Hangat', HOT:'Panas' };
+
+// ---------------------------------------------------------------
+// UTIL
+// ---------------------------------------------------------------
+const $ = (s, el=document) => el.querySelector(s);
+const esc = v => String(v ?? '').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const rp = n => n == null ? '—' : 'Rp' + new Intl.NumberFormat('id-ID').format(Math.round(n));
+const fmt = ts => ts ? new Date(ts).toLocaleString('id-ID', {timeZone:'Asia/Jakarta', day:'2-digit', month:'short', hour:'2-digit', minute:'2-digit'}) : '—';
+const fmtDate = d => d ? new Date(d + 'T00:00:00+07:00').toLocaleDateString('id-ID', {timeZone:'Asia/Jakarta', weekday:'short', day:'2-digit', month:'short', year:'numeric'}) : '—';
+const minsSince = ts => ts ? Math.floor((Date.now() - new Date(ts).getTime()) / 60000) : null;
+const ago = ts => {
+  const m = minsSince(ts); if (m == null) return '—';
+  if (m < 1) return 'baru saja'; if (m < 60) return m + ' mnt lalu';
+  const h = Math.floor(m/60); if (h < 24) return h + ' jam lalu';
+  return Math.floor(h/24) + ' hari lalu';
+};
+const badge = (code, label) => `<span class="badge b-${esc(code)}">${esc(label ?? code)}</span>`;
+const waLink = phone => `https://wa.me/${esc(phone)}`;
+const prettyPhone = p => p ? '0' + String(p).replace(/^62/, '') : '';
+const leadName = l => l?.customer_name || prettyPhone(l?.phone_normalized) || 'Tanpa nama';
+const opts = (map, sel, blank) => (blank ? `<option value="">${esc(blank)}</option>` : '') +
+  Object.entries(map).map(([k,v]) => `<option value="${esc(k)}" ${k===sel?'selected':''}>${esc(v)}</option>`).join('');
+const todayWIB = () => new Date(Date.now() + 7*3600e3).toISOString().slice(0,10);
+
+function toast(msg, bad=false){
+  const t = $('#toast'); t.textContent = msg; t.className = 'toast' + (bad ? ' bad' : '');
+  clearTimeout(toast._t); toast._t = setTimeout(() => t.classList.add('hidden'), 3500);
+}
+function friendlyError(e){
+  const m = e?.message || String(e);
+  if (e?.code === '23505' && /leads_one_active_per_phone/.test(m)) return 'Nomor ini sudah punya lead aktif.';
+  if (e?.code === '23505' && /bookings_one_active_per_lead/.test(m)) return 'Lead ini sudah punya booking aktif.';
+  if (e?.code === '23505' && /handoffs_one_open_per_lead/.test(m)) return 'Lead ini sudah punya handoff terbuka.';
+  if (/leads_phone_chk/.test(m)) return 'Format nomor WhatsApp tidak valid.';
+  if (/leads_lost_reason_chk/.test(m)) return 'Pilih alasan tidak lanjut sebelum mengubah status ke "Tidak lanjut".';
+  if (/row-level security|permission denied/i.test(m)) return 'Akun ini tidak punya izin untuk tindakan tersebut.';
+  return m;
+}
+async function run(promise, okMsg){
+  const { data, error } = await promise;
+  if (error) { toast(friendlyError(error), true); throw error; }
+  if (okMsg) toast(okMsg);
+  return data;
+}
+
+// ---------------------------------------------------------------
+// STATE
+// ---------------------------------------------------------------
+const state = { me:null, staff:null, tab:'queue', products:[], leadsFilter:{q:'', status:'ACTIVE'}, reportDays:30, timer:null };
+
+// ---------------------------------------------------------------
+// AUTH
+// ---------------------------------------------------------------
+async function boot(){
+  const { data:{ session } } = await sb.auth.getSession();
+  if (!session) return showLogin();
+  state.me = session.user;
+  const { data:staff, error } = await sb.from('staff').select('*').eq('user_id', state.me.id).maybeSingle();
+  if (error || !staff || !staff.is_active) {
+    await sb.auth.signOut();
+    return showLogin('Akun ini belum terdaftar sebagai staf aktif. Minta Pemilik menambahkannya.');
+  }
+  state.staff = staff;
+  $('#meName').textContent = `${staff.full_name} · ${staff.role === 'OWNER' ? 'Pemilik' : 'Admin'}`;
+  $('#loginView').classList.add('hidden');
+  $('#appView').classList.remove('hidden');
+  state.products = await run(sb.from('products').select('*').eq('is_available', true)
+    .order('vehicle_category').order('vehicle_model').order('normal_price'));
+  switchTab(state.tab);
+  clearInterval(state.timer);
+  state.timer = setInterval(() => { if (state.tab === 'queue' && !$('#drawerRoot').innerHTML) renderQueue(); }, 60000);
+}
+function showLogin(msg){
+  $('#appView').classList.add('hidden');
+  $('#loginView').classList.remove('hidden');
+  $('#loginErr').textContent = msg || '';
+}
+$('#loginForm').addEventListener('submit', async e => {
+  e.preventDefault();
+  $('#loginErr').textContent = '';
+  const { error } = await sb.auth.signInWithPassword({ email: $('#email').value.trim(), password: $('#password').value });
+  if (error) { $('#loginErr').textContent = 'Email atau password salah.'; return; }
+  boot();
+});
+$('#logoutBtn').addEventListener('click', async () => { await sb.auth.signOut(); clearInterval(state.timer); showLogin(); });
+
+// ---------------------------------------------------------------
+// NAV
+// ---------------------------------------------------------------
+$('#nav').addEventListener('click', e => { const b = e.target.closest('button[data-tab]'); if (b) switchTab(b.dataset.tab); });
+function switchTab(tab){
+  state.tab = tab;
+  document.querySelectorAll('#nav button').forEach(b => b.classList.toggle('active', b.dataset.tab === tab));
+  document.querySelectorAll('main > section').forEach(s => s.classList.toggle('hidden', s.id !== 'tab-' + tab));
+  ({ queue:renderQueue, leads:renderLeads, bookings:renderBookings, products:renderProducts, reports:renderReports })[tab]();
+}
+
+// ---------------------------------------------------------------
+// ANTREAN
+// ---------------------------------------------------------------
+async function renderQueue(){
+  const el = $('#tab-queue');
+  const nowIso = new Date().toISOString();
+  const [handoffs, followups, active] = await Promise.all([
+    run(sb.from('handoffs').select('*, leads(id, customer_name, phone_normalized, vehicle_model, lead_status)')
+      .in('status', ['OPEN','TAKEN']).order('priority').order('requested_at')),
+    run(sb.from('followups').select('*, leads(id, customer_name, phone_normalized, vehicle_model, lead_status, conversation_owner)')
+      .eq('status', 'PENDING').lte('scheduled_at', nowIso).order('scheduled_at').limit(100)),
+    run(sb.from('leads').select('id, customer_name, phone_normalized, vehicle_model, lead_status, conversation_owner, last_inbound_at, last_outbound_at, created_at')
+      .in('lead_status', ACTIVE_STATUSES).order('last_inbound_at', { ascending:true, nullsFirst:false }).limit(300)),
+  ]);
+  const unanswered = active.filter(l => l.last_inbound_at && (!l.last_outbound_at || new Date(l.last_inbound_at) > new Date(l.last_outbound_at)));
+  const total = handoffs.filter(h => h.status === 'OPEN').length + unanswered.length + followups.length;
+  const qc = $('#queueCount'); qc.textContent = total; qc.classList.toggle('hidden', !total);
+
+  el.innerHTML = `
+    <div class="toolbar">
+      <button class="btn primary" id="qNewLead">+ Lead baru dari WhatsApp</button>
+      <button class="btn" id="qRefresh">Muat ulang</button>
+      <span class="meta" style="color:var(--muted);font-size:12px">Diperbarui otomatis tiap 1 menit · ${fmt(nowIso)} WIB</span>
+    </div>
+    <div class="grid g3">
+      <div class="card">
+        <h3>Handoff ke admin (${handoffs.length})</h3>
+        <div class="sub">P1 harus diambil maks. ${P1_TARGET_MIN} menit, termasuk jam istirahat.</div>
+        ${handoffs.length ? handoffs.map(h => {
+          const w = minsSince(h.requested_at), late = h.status === 'OPEN' && h.priority === 'P1' && w > P1_TARGET_MIN;
+          return `<div class="item">
+            <div>
+              <div>${badge(h.priority)} <a href="#" class="who" data-lead="${h.lead_id}">${esc(leadName(h.leads))}</a></div>
+              <div class="meta">${esc(HANDOFF_REASON[h.reason])}${h.summary ? ' · ' + esc(h.summary) : ''}</div>
+              <div class="meta ${late ? 'late' : ''}">${h.status === 'TAKEN' ? 'Ditangani admin' : 'Menunggu ' + ago(h.requested_at)}</div>
+            </div>
+            <div class="row">
+              <a class="btn small wa" target="_blank" rel="noopener" href="${waLink(h.leads?.phone_normalized)}">WA</a>
+              ${h.status === 'OPEN'
+                ? `<button class="btn small dark" data-take="${h.id}">Ambil alih</button>`
+                : `<button class="btn small" data-release="${h.id}">Kembalikan ke AI</button>`}
+            </div>
+          </div>`;
+        }).join('') : '<div class="empty">Tidak ada handoff terbuka.</div>'}
+      </div>
+
+      <div class="card">
+        <h3>Belum dibalas (${unanswered.length})</h3>
+        <div class="sub">Pesan terakhir dari pelanggan, belum ada balasan tercatat.</div>
+        ${unanswered.length ? unanswered.map(l => `<div class="item">
+            <div>
+              <div><a href="#" class="who" data-lead="${l.id}">${esc(leadName(l))}</a> ${badge(l.lead_status, STATUS[l.lead_status])}</div>
+              <div class="meta">${esc(l.vehicle_model || 'Motor belum diketahui')} · ${badge(l.conversation_owner)}</div>
+              <div class="meta ${minsSince(l.last_inbound_at) > P1_TARGET_MIN ? 'late' : ''}">Chat masuk ${ago(l.last_inbound_at)}</div>
+            </div>
+            <a class="btn small wa" target="_blank" rel="noopener" href="${waLink(l.phone_normalized)}">WA</a>
+          </div>`).join('') : '<div class="empty">Semua chat sudah dibalas.</div>'}
+      </div>
+
+      <div class="card">
+        <h3>Follow-up jatuh tempo (${followups.length})</h3>
+        <div class="sub">Kirim lewat Balasan Cepat di WhatsApp Business, lalu tandai terkirim.</div>
+        ${followups.length ? followups.map(f => `<div class="item">
+            <div>
+              <div><b>${esc(f.template_code)}</b> · <a href="#" class="who" data-lead="${f.lead_id}">${esc(leadName(f.leads))}</a></div>
+              <div class="meta">${esc(f.reason || '')} · ${esc(f.leads?.vehicle_model || '')}</div>
+              <div class="meta">Jatuh tempo ${ago(f.scheduled_at)}${f.leads?.conversation_owner === 'ADMIN' ? ' · sedang ditangani admin' : ''}</div>
+            </div>
+            <div class="row">
+              <a class="btn small wa" target="_blank" rel="noopener" href="${waLink(f.leads?.phone_normalized)}">WA</a>
+              <button class="btn small good" data-fu-sent="${f.id}" data-seq="${f.sequence_number}" data-lead-id="${f.lead_id}" data-code="${esc(f.template_code)}">Terkirim</button>
+              <button class="btn small" data-fu-skip="${f.id}">Lewati</button>
+            </div>
+          </div>`).join('') : '<div class="empty">Tidak ada follow-up jatuh tempo.</div>'}
+      </div>
+    </div>`;
+
+  $('#qRefresh').onclick = renderQueue;
+  $('#qNewLead').onclick = openNewLead;
+  el.querySelectorAll('[data-lead]').forEach(a => a.onclick = e => { e.preventDefault(); openLead(a.dataset.lead); });
+  el.querySelectorAll('[data-take]').forEach(b => b.onclick = async () => {
+    await run(sb.from('handoffs').update({ status:'TAKEN' }).eq('id', b.dataset.take), 'Diambil alih. Matikan Business Agent di chat ini.');
+    renderQueue();
+  });
+  el.querySelectorAll('[data-release]').forEach(b => b.onclick = async () => {
+    await run(sb.from('handoffs').update({ status:'RELEASED' }).eq('id', b.dataset.release), 'Dikembalikan ke AI. Aktifkan lagi Business Agent di chat ini.');
+    renderQueue();
+  });
+  el.querySelectorAll('[data-fu-sent]').forEach(b => b.onclick = () => markFollowupSent(b.dataset.fuSent, b.dataset.leadId, b.dataset.code, Number(b.dataset.seq)));
+  el.querySelectorAll('[data-fu-skip]').forEach(b => b.onclick = async () => {
+    await run(sb.from('followups').update({ status:'SKIPPED', cancelled_at:new Date().toISOString(), cancel_reason:'Dilewati admin' }).eq('id', b.dataset.fuSkip), 'Follow-up dilewati.');
+    renderQueue();
+  });
+}
+
+async function markFollowupSent(fuId, leadId, code, seq){
+  const msg = await run(sb.from('messages').insert({
+    lead_id: leadId, direction:'OUTBOUND', sender_type:'ADMIN', sender_staff_id: state.me.id,
+    message_text: `Follow-up ${code} (Balasan Cepat)`, template_code: code, is_followup: true, delivery_status:'SENT'
+  }).select('id').single());
+  await run(sb.from('followups').update({ status:'SENT', sent_at:new Date().toISOString(), sent_message_id: msg.id }).eq('id', fuId), `Follow-up ${code} ditandai terkirim.`);
+  // Tahap terakhir: tawarkan menutup lead.
+  const { data:rest } = await sb.from('followups').select('id').eq('lead_id', leadId).eq('status', 'PENDING');
+  if (!rest?.length && seq >= 7 && confirm('Ini follow-up terakhir. Tandai lead sebagai "Tidak lanjut — tidak ada respons"?')) {
+    await run(sb.from('leads').update({ lead_status:'LOST', lost_reason:'NO_RESPONSE' }).eq('id', leadId), 'Lead ditutup.');
+  }
+  renderQueue();
+}
+
+// ---------------------------------------------------------------
+// LEAD BARU
+// ---------------------------------------------------------------
+function openNewLead(){
+  openDrawer(`
+    <div class="top"><h2>Lead baru dari WhatsApp</h2><button class="btn" data-close>Tutup</button></div>
+    <div class="card">
+      <form id="newLeadForm" class="form">
+        <div><label>Nomor WhatsApp *</label><input name="phone" required placeholder="0857xxxxxxxx" inputmode="tel"></div>
+        <div><label>Nama</label><input name="customer_name"></div>
+        <div><label>Jenis</label><select name="vehicle_type"><option>Motor</option><option>Mobil</option></select></div>
+        <div><label>Model kendaraan</label><input name="vehicle_model" list="modelList" placeholder="mis. Honda Vario 160"></div>
+        <div><label>Kode iklan</label><input name="ad_code" placeholder="mis. AZ01"></div>
+        <div><label>Sumber</label><select name="attribution_source">
+          <option value="CTWA_REFERRAL">Iklan Meta (CTWA)</option><option value="MANUAL">Lainnya / organik</option><option value="UNKNOWN">Tidak tahu</option></select></div>
+        <div class="full"><label>Pesan pertama pelanggan</label><textarea name="first_message" placeholder="Salin chat pertama dari WhatsApp (opsional)"></textarea></div>
+        <div class="full row"><button class="btn primary" type="submit">Simpan lead</button></div>
+      </form>
+      ${modelDatalist()}
+    </div>`);
+  $('#newLeadForm').onsubmit = async e => {
+    e.preventDefault();
+    const f = Object.fromEntries(new FormData(e.target));
+    const { data, error } = await sb.from('leads').insert({
+      phone_normalized: f.phone, customer_name: f.customer_name || null, vehicle_type: f.vehicle_type,
+      vehicle_model: f.vehicle_model || null, ad_code: f.ad_code || null,
+      attribution_source: f.ad_code ? 'CTWA_REFERRAL' : f.attribution_source
+    }).select('id').single();
+    if (error) {
+      toast(friendlyError(error), true);
+      if (error.code === '23505') {   // buka lead aktif yang sudah ada
+        const digits = f.phone.replace(/\D/g,'').replace(/^0/,'62').replace(/^8/,'628');
+        const { data:ex } = await sb.from('leads').select('id').eq('phone_normalized', digits).in('lead_status', ACTIVE_STATUSES.concat('BOOKED')).maybeSingle();
+        if (ex) openLead(ex.id);
+      }
+      return;
+    }
+    if (f.first_message?.trim()) {
+      await run(sb.from('messages').insert({ lead_id:data.id, direction:'INBOUND', sender_type:'CUSTOMER', message_text:f.first_message.trim(), delivery_status:'RECEIVED' }));
+    }
+    toast('Lead tersimpan.');
+    openLead(data.id);
+    if (state.tab === 'queue') renderQueue(); else if (state.tab === 'leads') renderLeads();
+  };
+}
+function modelDatalist(){
+  const models = [...new Set(state.products.map(p => p.vehicle_model))];
+  return `<datalist id="modelList">${models.map(m => `<option value="${esc(m)}">`).join('')}</datalist>`;
+}
+
+// ---------------------------------------------------------------
+// DETAIL LEAD
+// ---------------------------------------------------------------
+function openDrawer(html){
+  $('#drawerRoot').innerHTML = `<div class="overlay"><div class="drawer">${html}</div></div>`;
+  const ov = $('#drawerRoot .overlay');
+  ov.addEventListener('click', e => { if (e.target === ov || e.target.closest('[data-close]')) closeDrawer(); });
+}
+function closeDrawer(){ $('#drawerRoot').innerHTML = ''; ({ queue:renderQueue, leads:renderLeads, bookings:renderBookings })[state.tab]?.(); }
+document.addEventListener('keydown', e => { if (e.key === 'Escape' && $('#drawerRoot').innerHTML) closeDrawer(); });
+
+function productOptions(model, selectedId){
+  const m = (model || '').toLowerCase();
+  const match = state.products.filter(p => m && (p.vehicle_model.toLowerCase().includes(m) || m.includes(p.vehicle_model.toLowerCase().split(' / ')[0])));
+  const list = match.length ? match : state.products;
+  const groups = {};
+  list.forEach(p => (groups[p.vehicle_model] ||= []).push(p));
+  return Object.entries(groups).map(([g, ps]) => `<optgroup label="${esc(g)}">${ps.map(p =>
+    `<option value="${p.id}" ${p.id === selectedId ? 'selected' : ''}>${esc(p.package_name)} — ${rp(p.promo_price ?? p.normal_price)}${p.promo_price != null ? ' (normal ' + rp(p.normal_price) + ')' : ''}</option>`).join('')}</optgroup>`).join('');
+}
+
+async function openLead(id){
+  const [lead, msgs, handoffs, bookings, fus] = await Promise.all([
+    run(sb.from('leads').select('*').eq('id', id).single()),
+    run(sb.from('messages').select('*').eq('lead_id', id).order('sent_at')),
+    run(sb.from('handoffs').select('*').eq('lead_id', id).in('status', ['OPEN','TAKEN'])),
+    run(sb.from('bookings').select('*').eq('lead_id', id).order('created_at', { ascending:false })),
+    run(sb.from('followups').select('*').eq('lead_id', id).eq('status', 'PENDING').order('scheduled_at')),
+  ]);
+  const ho = handoffs[0];
+  const prodName = Object.fromEntries(state.products.map(p => [p.id, `${p.package_name}`]));
+
+  openDrawer(`
+    <div class="top">
+      <div>
+        <h2>${esc(leadName(lead))}</h2>
+        <div class="row" style="margin-top:4px">
+          ${badge(lead.lead_status, STATUS[lead.lead_status])} ${badge(lead.conversation_owner)}
+          ${lead.lead_temperature ? badge('', TEMP[lead.lead_temperature]) : ''}
+          <span class="meta" style="color:var(--muted);font-size:12px">${esc(prettyPhone(lead.phone_normalized))} · masuk ${fmt(lead.created_at)}${lead.ad_code ? ' · iklan ' + esc(lead.ad_code) : ''}</span>
+        </div>
+      </div>
+      <div class="row">
+        <a class="btn wa" target="_blank" rel="noopener" href="${waLink(lead.phone_normalized)}">Buka WhatsApp</a>
+        <button class="btn" data-close>Tutup</button>
+      </div>
+    </div>
+
+    <section class="card">
+      <h3>Percakapan</h3>
+      <div class="msgs" id="msgs">
+        ${msgs.length ? msgs.map(m => `<div class="msg ${m.direction === 'INBOUND' ? 'in' : 'out'}">${esc(m.message_text || '(' + m.message_type + ')')}`
+          + (m.quoted_price != null ? `<span class="q">Penawaran: ${esc(prodName[m.quoted_product_id] || '')} ${rp(m.quoted_price)}</span>` : '')
+          + `<span class="t">${m.direction === 'INBOUND' ? 'Pelanggan' : (m.sender_type === 'AI' ? 'AI' : 'Admin')}${m.is_followup ? ' · follow-up ' + esc(m.template_code || '') : ''} · ${fmt(m.sent_at)}</span></div>`).join('')
+          : '<div class="empty">Belum ada pesan tercatat.</div>'}
+      </div>
+      <form id="msgForm" class="form" style="margin-top:10px">
+        <div class="full row">
+          <div class="seg" id="msgSeg">
+            <button type="button" data-v="CUSTOMER" class="on">Pelanggan</button>
+            <button type="button" data-v="ADMIN">Kita (admin)</button>
+            <button type="button" data-v="AI">Kita (AI)</button>
+          </div>
+        </div>
+        <div class="full"><textarea name="text" placeholder="Salin isi chat dari WhatsApp" required></textarea></div>
+        <div class="full hidden" id="quoteWrap"><label>Pesan ini berisi harga? Pilih paket (harga diambil dari database)</label>
+          <select name="product"><option value="">— Tidak ada harga —</option>${productOptions(lead.vehicle_model)}</select></div>
+        <div class="full row"><button class="btn primary" type="submit">Catat pesan</button>
+          <span style="color:var(--muted);font-size:12px">Pesan kita memulai ulang jadwal follow-up. Balasan pelanggan membatalkannya.</span></div>
+      </form>
+      ${fus.length ? `<div class="meta" style="margin-top:8px;color:var(--muted);font-size:12px">Follow-up terjadwal: ${fus.map(f => `${esc(f.template_code)} ${fmt(f.scheduled_at)}`).join(' · ')}</div>` : ''}
+    </section>
+
+    <section class="card">
+      <h3>Serah-terima admin</h3>
+      ${ho ? `<div class="row">${badge(ho.priority)} <b>${esc(HANDOFF_REASON[ho.reason])}</b> · ${ho.status === 'OPEN' ? 'menunggu ' + ago(ho.requested_at) : 'sedang ditangani admin'}
+          ${ho.status === 'OPEN' ? `<button class="btn small dark" id="hoTake">Ambil alih</button>` : `<button class="btn small" id="hoRelease">Kembalikan ke AI</button>`}</div>`
+        : `<form id="hoForm" class="form">
+            <div><label>Alasan</label><select name="reason">${opts(HANDOFF_REASON, 'READY_TO_BOOK')}</select></div>
+            <div><label>Prioritas</label><select name="priority"><option>P1</option><option>P2</option><option>P3</option></select></div>
+            <div class="full"><label>Ringkasan singkat</label><input name="summary" placeholder="mis. minta jadwal Sabtu pagi"></div>
+            <div class="full"><button class="btn dark" type="submit">Buat handoff</button></div>
+          </form>`}
+    </section>
+
+    <section class="card">
+      <h3>Booking</h3>
+      ${bookings.map(b => `<div class="item"><div>
+          <div><b>${esc(b.package_name_snapshot)}</b> · ${esc(b.vehicle_model)} ${badge(b.booking_status, BOOKING_STATUS[b.booking_status])}</div>
+          <div class="meta">${fmtDate(b.booking_date)} · ${esc(String(b.slot_start).slice(0,5))} WIB · ${rp(b.promo_price ?? b.quoted_price)}${b.notes ? ' · ' + esc(b.notes) : ''}</div>
+        </div><div class="row">${bookingButtons(b)}</div></div>`).join('')}
+      ${bookings.some(b => ['PENDING_CONFIRMATION','CONFIRMED','RESCHEDULED'].includes(b.booking_status)) ? '' : `
+        <form id="bkForm" class="form" style="margin-top:8px">
+          <div class="full"><label>Paket</label><select name="product" required>${productOptions(lead.vehicle_model)}</select></div>
+          <div><label>Tanggal</label><input type="date" name="date" required min="${todayWIB()}"></div>
+          <div><label>Jam</label><input type="time" name="time" required value="09:00" min="08:00" max="17:00"></div>
+          <div class="full"><label>Catatan</label><input name="notes" placeholder="mis. ditunggu / ditinggal, warna motor"></div>
+          <div class="full"><button class="btn primary" type="submit">Buat booking</button>
+            <span style="color:var(--muted);font-size:12px">Tanpa DP. Status jadi "Booking" setelah dikonfirmasi.</span></div>
+        </form>`}
+    </section>
+
+    <section class="card">
+      <h3>Data lead</h3>
+      <form id="leadForm" class="form">
+        <div><label>Nama</label><input name="customer_name" value="${esc(lead.customer_name)}"></div>
+        <div><label>Domisili</label><input name="domicile" value="${esc(lead.domicile)}"></div>
+        <div><label>Jenis</label><select name="vehicle_type">${opts({Motor:'Motor', Mobil:'Mobil'}, lead.vehicle_type, '—')}</select></div>
+        <div><label>Model kendaraan</label><input name="vehicle_model" list="modelList" value="${esc(lead.vehicle_model)}"></div>
+        <div><label>Warna</label><input name="vehicle_color" value="${esc(lead.vehicle_color)}"></div>
+        <div><label>Minat layanan</label><input name="service_interest" value="${esc(lead.service_interest)}" placeholder="mis. PPF full body"></div>
+        <div><label>Budget</label><input name="budget_range" value="${esc(lead.budget_range)}"></div>
+        <div><label>Suhu lead</label><select name="lead_temperature">${opts(TEMP, lead.lead_temperature, '—')}</select></div>
+        <div><label>Status</label><select name="lead_status" id="statusSel">${opts(STATUS, lead.lead_status)}</select></div>
+        <div id="lostWrap" class="${lead.lead_status === 'LOST' ? '' : 'hidden'}"><label>Alasan tidak lanjut</label><select name="lost_reason">${opts(LOST_REASON, lead.lost_reason, '— pilih —')}</select></div>
+        <div><label>Kode iklan</label><input name="ad_code" value="${esc(lead.ad_code)}"></div>
+        <div class="full"><label>Catatan</label><input name="lost_note" value="${esc(lead.lost_note)}"></div>
+        <div class="full"><button class="btn primary" type="submit">Simpan data lead</button></div>
+      </form>
+      ${modelDatalist()}
+    </section>`);
+
+  // pesan
+  let sender = 'CUSTOMER';
+  $('#msgSeg').onclick = e => {
+    const b = e.target.closest('button[data-v]'); if (!b) return;
+    sender = b.dataset.v;
+    $('#msgSeg').querySelectorAll('button').forEach(x => x.classList.toggle('on', x === b));
+    $('#quoteWrap').classList.toggle('hidden', sender === 'CUSTOMER');
+  };
+  $('#msgForm').onsubmit = async e => {
+    e.preventDefault();
+    const f = Object.fromEntries(new FormData(e.target));
+    const p = sender !== 'CUSTOMER' && f.product ? state.products.find(x => x.id === f.product) : null;
+    await run(sb.from('messages').insert({
+      lead_id: id, direction: sender === 'CUSTOMER' ? 'INBOUND' : 'OUTBOUND', sender_type: sender,
+      sender_staff_id: sender === 'ADMIN' ? state.me.id : null, message_text: f.text.trim(),
+      delivery_status: sender === 'CUSTOMER' ? 'RECEIVED' : 'SENT',
+      quoted_product_id: p?.id ?? null, quoted_price: p ? (p.promo_price ?? p.normal_price) : null
+    }), 'Pesan tercatat.');
+    openLead(id);
+  };
+  $('#msgs').scrollTop = 1e6;
+
+  // handoff
+  if ($('#hoForm')) {
+    const rs = $('#hoForm [name=reason]'), ps = $('#hoForm [name=priority]');
+    rs.onchange = () => ps.value = DEFAULT_PRIORITY[rs.value]; ps.value = DEFAULT_PRIORITY[rs.value];
+    $('#hoForm').onsubmit = async e => {
+      e.preventDefault();
+      const f = Object.fromEntries(new FormData(e.target));
+      await run(sb.from('handoffs').insert({ lead_id:id, reason:f.reason, priority:f.priority, summary:f.summary || null }), 'Handoff dibuat.');
+      if (f.reason === 'READY_TO_BOOK' && ACTIVE_STATUSES.includes(lead.lead_status)) await sb.from('leads').update({ lead_status:'READY_TO_BOOK' }).eq('id', id);
+      openLead(id);
+    };
+  }
+  $('#hoTake') && ($('#hoTake').onclick = async () => { await run(sb.from('handoffs').update({ status:'TAKEN' }).eq('id', ho.id), 'Diambil alih. Matikan Business Agent di chat ini.'); openLead(id); });
+  $('#hoRelease') && ($('#hoRelease').onclick = async () => { await run(sb.from('handoffs').update({ status:'RELEASED' }).eq('id', ho.id), 'Dikembalikan ke AI.'); openLead(id); });
+
+  // booking
+  if ($('#bkForm')) $('#bkForm').onsubmit = async e => {
+    e.preventDefault();
+    const f = Object.fromEntries(new FormData(e.target));
+    const p = state.products.find(x => x.id === f.product);
+    await run(sb.from('bookings').insert({
+      lead_id:id, service_package_id:p.id, vehicle_model: lead.vehicle_model || p.vehicle_model,
+      package_name_snapshot: p.package_name, quoted_price: p.normal_price, promo_price: p.promo_price,
+      booking_date: f.date, slot_start: f.time, notes: f.notes || null
+    }), 'Booking dibuat. Konfirmasi setelah jadwal disepakati.');
+    openLead(id);
+  };
+  wireBookingButtons($('#drawerRoot'), () => openLead(id));
+
+  // data lead
+  $('#statusSel').onchange = e => $('#lostWrap').classList.toggle('hidden', e.target.value !== 'LOST');
+  $('#leadForm').onsubmit = async e => {
+    e.preventDefault();
+    const f = Object.fromEntries(new FormData(e.target));
+    for (const k in f) if (f[k] === '') f[k] = null;
+    if (f.lead_status !== 'LOST') f.lost_reason = lead.lost_reason;  // biarkan
+    if (f.lead_status === 'LOST' && !f.lost_reason) return toast('Pilih alasan tidak lanjut.', true);
+    await run(sb.from('leads').update(f).eq('id', id), 'Data lead tersimpan.');
+    openLead(id);
+  };
+}
+
+function bookingButtons(b){
+  const s = b.booking_status;
+  const btns = [];
+  if (s === 'PENDING_CONFIRMATION') btns.push(`<button class="btn small good" data-bk="${b.id}" data-act="confirm">Konfirmasi</button>`);
+  if (s === 'CONFIRMED' || s === 'RESCHEDULED') {
+    btns.push(`<button class="btn small good" data-bk="${b.id}" data-act="done">Selesai dipasang</button>`);
+    btns.push(`<button class="btn small" data-bk="${b.id}" data-act="noshow">Tidak datang</button>`);
+  }
+  if (['PENDING_CONFIRMATION','CONFIRMED','RESCHEDULED'].includes(s)) btns.push(`<button class="btn small" data-bk="${b.id}" data-act="cancel">Batal</button>`);
+  return btns.join('');
+}
+function wireBookingButtons(root, after){
+  root.querySelectorAll('[data-bk]').forEach(btn => btn.onclick = async () => {
+    const id = btn.dataset.bk, act = btn.dataset.act;
+    const patch = {
+      confirm: { booking_status:'CONFIRMED' },
+      done:    { installation_status:'DONE', payment_status:'PAID_ON_SITE' },
+      noshow:  { booking_status:'NO_SHOW' },
+      cancel:  { booking_status:'CANCELLED' },
+    }[act];
+    if (act === 'cancel') { const r = prompt('Alasan batal?'); if (r === null) return; patch.cancel_reason = r || null; }
+    if (act === 'done' && !confirm('Tandai pemasangan selesai dan sudah dibayar di lokasi?')) return;
+    await run(sb.from('bookings').update(patch).eq('id', id),
+      { confirm:'Booking terkonfirmasi. Follow-up penjualan dihentikan.', done:'Pemasangan selesai.', noshow:'Ditandai tidak datang.', cancel:'Booking dibatalkan.' }[act]);
+    after();
+  });
+}
+
+// ---------------------------------------------------------------
+// DAFTAR LEAD
+// ---------------------------------------------------------------
+async function renderLeads(){
+  const el = $('#tab-leads');
+  const F = state.leadsFilter;
+  let qy = sb.from('leads').select('id, customer_name, phone_normalized, vehicle_model, lead_status, conversation_owner, ad_code, created_at, last_inbound_at, last_outbound_at')
+    .order('created_at', { ascending:false }).limit(300);
+  if (F.status === 'ACTIVE') qy = qy.in('lead_status', ACTIVE_STATUSES);
+  else if (F.status) qy = qy.eq('lead_status', F.status);
+  if (F.q) {
+    const q = F.q.replace(/[,()]/g, ' ').trim();
+    const digits = q.replace(/\D/g, '').replace(/^0/, '');
+    qy = qy.or([`customer_name.ilike.%${q}%`, `vehicle_model.ilike.%${q}%`, `ad_code.ilike.%${q}%`].concat(digits.length >= 4 ? [`phone_normalized.ilike.%${digits}%`] : []).join(','));
+  }
+  const leads = await run(qy);
+  el.innerHTML = `
+    <div class="toolbar">
+      <div><label>Cari</label><input type="search" id="lq" value="${esc(F.q)}" placeholder="nama, nomor, motor, kode iklan"></div>
+      <div><label>Status</label><select id="ls"><option value="ACTIVE" ${F.status==='ACTIVE'?'selected':''}>Semua yang aktif</option><option value="" ${F.status===''?'selected':''}>Semua</option>${opts(STATUS, F.status)}</select></div>
+      <button class="btn primary" id="lNew">+ Lead baru</button>
+    </div>
+    <div class="tablewrap"><table>
+      <thead><tr><th>Masuk</th><th>Nama</th><th>Nomor</th><th>Kendaraan</th><th>Status</th><th>Pegang</th><th>Iklan</th><th>Chat terakhir</th></tr></thead>
+      <tbody>${leads.map(l => `<tr class="click" data-lead="${l.id}">
+        <td>${fmt(l.created_at)}</td><td>${esc(l.customer_name || '—')}</td><td>${esc(prettyPhone(l.phone_normalized))}</td>
+        <td>${esc(l.vehicle_model || '—')}</td><td>${badge(l.lead_status, STATUS[l.lead_status])}</td><td>${badge(l.conversation_owner)}</td>
+        <td>${esc(l.ad_code || '—')}</td><td>${ago([l.last_inbound_at, l.last_outbound_at].filter(Boolean).sort().pop())}</td></tr>`).join('')
+        || '<tr><td colspan="8" class="empty">Tidak ada lead.</td></tr>'}</tbody>
+    </table></div>
+    <div style="color:var(--muted);font-size:12px;margin-top:6px">${leads.length} lead${leads.length === 300 ? ' (300 terbaru)' : ''}</div>`;
+  let t;
+  $('#lq').oninput = e => { clearTimeout(t); t = setTimeout(() => { F.q = e.target.value; renderLeads().then(() => { const i = $('#lq'); i.focus(); i.setSelectionRange(i.value.length, i.value.length); }); }, 350); };
+  $('#ls').onchange = e => { F.status = e.target.value; renderLeads(); };
+  $('#lNew').onclick = openNewLead;
+  el.querySelectorAll('tr[data-lead]').forEach(r => r.onclick = () => openLead(r.dataset.lead));
+}
+
+// ---------------------------------------------------------------
+// BOOKING
+// ---------------------------------------------------------------
+async function renderBookings(){
+  const el = $('#tab-bookings');
+  const from = new Date(Date.now() - 3*864e5 + 7*3600e3).toISOString().slice(0,10);
+  const rows = await run(sb.from('bookings').select('*, leads(id, customer_name, phone_normalized)')
+    .gte('booking_date', from).order('booking_date').order('slot_start').limit(300));
+  el.innerHTML = `
+    <h2>Jadwal booking</h2>
+    <div class="tablewrap"><table>
+      <thead><tr><th>Tanggal</th><th>Jam</th><th>Pelanggan</th><th>Kendaraan</th><th>Paket</th><th class="num">Harga</th><th>Status</th><th></th></tr></thead>
+      <tbody>${rows.map(b => `<tr>
+        <td>${fmtDate(b.booking_date)}</td><td>${esc(String(b.slot_start).slice(0,5))}</td>
+        <td><a href="#" data-lead="${b.lead_id}">${esc(leadName(b.leads))}</a></td>
+        <td>${esc(b.vehicle_model)}</td><td>${esc(b.package_name_snapshot)}</td>
+        <td class="num">${rp(b.promo_price ?? b.quoted_price)}</td>
+        <td>${badge(b.booking_status, BOOKING_STATUS[b.booking_status])}</td>
+        <td><div class="row">${bookingButtons(b)}</div></td></tr>`).join('')
+        || '<tr><td colspan="8" class="empty">Belum ada booking dari 3 hari lalu ke depan.</td></tr>'}</tbody>
+    </table></div>`;
+  el.querySelectorAll('[data-lead]').forEach(a => a.onclick = e => { e.preventDefault(); openLead(a.dataset.lead); });
+  wireBookingButtons(el, renderBookings);
+}
+
+// ---------------------------------------------------------------
+// HARGA
+// ---------------------------------------------------------------
+function renderProducts(q = ''){
+  const el = $('#tab-products');
+  const s = q.toLowerCase();
+  const list = state.products.filter(p => !s || (p.vehicle_model + ' ' + p.package_name + ' ' + p.vehicle_category).toLowerCase().includes(s));
+  el.innerHTML = `
+    <div class="toolbar">
+      <div><label>Cari</label><input type="search" id="pq" value="${esc(q)}" placeholder="mis. vario, ultimate pro, mobil"></div>
+      <span style="color:var(--muted);font-size:12px">Sumber harga resmi. ${state.staff.role === 'OWNER' ? 'Ubah harga di Supabase → Table Editor → products.' : 'Hanya Pemilik yang bisa mengubah harga.'}</span>
+    </div>
+    <div class="tablewrap"><table>
+      <thead><tr><th>Kendaraan</th><th>Paket</th><th class="num">Normal</th><th class="num">Promo</th><th>Ketebalan</th><th>Daya tahan</th><th>Bahan</th></tr></thead>
+      <tbody>${list.map(p => `<tr><td>${esc(p.vehicle_model)}<div class="meta" style="color:var(--muted);font-size:11.5px">${esc(p.vehicle_category)}</div></td>
+        <td>${esc(p.package_name)}</td><td class="num">${rp(p.normal_price)}</td><td class="num"><b>${rp(p.promo_price)}</b></td>
+        <td>${esc(p.thickness)}</td><td>${esc(p.durability_text)}</td><td style="font-size:12px;color:var(--muted)">${esc(p.material)}</td></tr>`).join('')}</tbody>
+    </table></div>`;
+  $('#pq').oninput = e => { const v = e.target.value; renderProducts(v); const i = $('#pq'); i.focus(); i.setSelectionRange(v.length, v.length); };
+}
+
+// ---------------------------------------------------------------
+// LAPORAN
+// ---------------------------------------------------------------
+async function renderReports(){
+  const el = $('#tab-reports');
+  const since = new Date(Date.now() - (state.reportDays - 1)*864e5 + 7*3600e3).toISOString().slice(0,10);
+  const [funnel, perHour] = await Promise.all([
+    run(sb.from('v_daily_ad_funnel').select('*').gte('day_wib', since)),
+    run(sb.from('v_leads_per_hour').select('*')),
+  ]);
+  const by = {};
+  const T = { spend:0, conv:0, leads:0, responded:0, qualified:0, quoted:0, booked:0 };
+  funnel.forEach(r => {
+    const a = by[r.ad_code] ||= { spend:0, conv:0, leads:0, responded:0, qualified:0, quoted:0, booked:0 };
+    a.spend += +r.spend; a.conv += +r.conversations_started; a.leads += +r.leads; a.responded += +r.responded;
+    a.qualified += +r.qualified; a.quoted += +r.quoted; a.booked += +r.booked;
+    T.spend += +r.spend; T.conv += +r.conversations_started; T.leads += +r.leads; T.responded += +r.responded;
+    T.qualified += +r.qualified; T.quoted += +r.quoted; T.booked += +r.booked;
+  });
+  const pct = (a, b) => b ? Math.round(a / b * 100) + '%' : '—';
+  const per = (a, b) => b ? rp(a / b) : '—';
+  const rows = Object.entries(by).sort((x, y) => y[1].leads - x[1].leads);
+
+  // heatmap lead per jam
+  const grid = Array.from({length:7}, () => Array(24).fill(0));
+  perHour.forEach(r => grid[r.day_of_week - 1][r.hour_wib] += +r.leads);
+  const max = Math.max(1, ...grid.flat());
+  const days = ['Sen','Sel','Rab','Kam','Jum','Sab','Min'];
+  const hourTotals = Array.from({length:24}, (_, h) => grid.reduce((s, d) => s + d[h], 0));
+  const peak = hourTotals.indexOf(Math.max(...hourTotals));
+
+  el.innerHTML = `
+    <div class="toolbar">
+      <div><label>Periode</label><select id="rd">${[7,30,90].map(d => `<option value="${d}" ${d===state.reportDays?'selected':''}>${d} hari terakhir</option>`).join('')}</select></div>
+    </div>
+    <div class="kpis">
+      <div class="kpi"><div class="v">${T.leads}</div><div class="l">Lead masuk</div></div>
+      <div class="kpi"><div class="v">${pct(T.responded, T.leads)}</div><div class="l">Membalas setelah kita kirim pesan</div></div>
+      <div class="kpi"><div class="v">${pct(T.booked, T.leads)}</div><div class="l">Lead → booking (${T.booked})</div></div>
+      <div class="kpi"><div class="v">${rp(T.spend)}</div><div class="l">Biaya iklan tercatat</div></div>
+      <div class="kpi"><div class="v">${per(T.spend, T.booked)}</div><div class="l">Biaya per booking</div></div>
+    </div>
+
+    <div class="card" style="margin-bottom:16px">
+      <h3>Per kode iklan</h3>
+      <div class="sub">Biaya iklan diambil dari tabel ad_spend_daily (impor export Ads Manager). Lead tanpa kode iklan dihitung sebagai UNKNOWN.</div>
+      <div class="tablewrap" style="max-height:none"><table>
+        <thead><tr><th>Kode iklan</th><th class="num">Biaya</th><th class="num">Chat (Meta)</th><th class="num">Lead</th><th class="num">Membalas</th><th class="num">Dikirim harga</th><th class="num">Booking</th><th class="num">Biaya/lead</th><th class="num">Biaya/booking</th></tr></thead>
+        <tbody>${rows.map(([code, a]) => `<tr><td><b>${esc(code)}</b></td><td class="num">${rp(a.spend)}</td><td class="num">${a.conv || '—'}</td>
+          <td class="num">${a.leads}</td><td class="num">${pct(a.responded, a.leads)}</td><td class="num">${a.quoted}</td>
+          <td class="num"><b>${a.booked}</b></td><td class="num">${per(a.spend, a.leads)}</td><td class="num"><b>${per(a.spend, a.booked)}</b></td></tr>`).join('')
+          || '<tr><td colspan="9" class="empty">Belum ada data pada periode ini.</td></tr>'}</tbody>
+      </table></div>
+    </div>
+
+    <div class="card">
+      <h3>Lead masuk per jam (WIB, semua waktu)</h3>
+      <div class="sub">Kotak bergaris = jam buka ${OPEN_HOUR}.00–${CLOSE_HOUR}.00. ${hourTotals[peak] ? `Jam tersibuk: ${peak}.00–${peak + 1}.00 (${hourTotals[peak]} lead). Pastikan ada admin piket di jam ini.` : ''}</div>
+      <div style="overflow-x:auto"><div class="heat">
+        <div></div>${Array.from({length:24}, (_, h) => `<div class="h">${h}</div>`).join('')}
+        ${grid.map((row, d) => `<div class="h" style="text-align:left">${days[d]}</div>` + row.map((v, h) =>
+          `<div class="${h >= OPEN_HOUR && h < CLOSE_HOUR ? 'open' : ''}" title="${days[d]} ${h}.00 — ${v} lead" style="background:${v ? `rgba(232,89,12,${0.12 + 0.88 * v / max})` : '#f0efea'};color:${v / max > .55 ? '#fff' : 'var(--ink)'}">${v || ''}</div>`).join('')).join('')}
+      </div></div>
+    </div>`;
+  $('#rd').onchange = e => { state.reportDays = +e.target.value; renderReports(); };
+}
+
+// ---------------------------------------------------------------
+sb.auth.onAuthStateChange((evt) => { if (evt === 'SIGNED_OUT') showLogin(); });
+boot();
+</script>
+</body>
+</html>
